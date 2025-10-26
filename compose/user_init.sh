@@ -58,6 +58,11 @@ just_add_user_to_group jenkins docker
 just_add_user_to_group gitea docker
 
 
+##### FIX PERMISSION
+exec_cmd 'chmod 600 /mnt/justsave/docker/volume/example/pptpd/moved_root/etc/ppp/*-secrets'
+
+
+
 # $1 is the path of directory
 create_nginx_dir() {
     local the_nginx_dir_path=$1
