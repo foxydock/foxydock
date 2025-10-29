@@ -59,10 +59,32 @@ function buildFdnAppRouteUpstream(r) {
 }
 
 function buildFdnAppUpstream(r) {
-  const fdnAppConfig = mergedUpstreamMap[r.variables.fdn_app_name];
-  // console.error('buildFdnAppUpstream mergedMap:', mergedMap)
+  const fdnAppName = r.variables.fdn_app_name;
+  const fdnAppNamespace = r.variables.fdn_app_namespace;
+
+  // APP 不存在
+  if (!mergedUpstreamMap.hasOwnProperty(fdnAppName)) {
+    return "";
+  }
+
+  const fdnAppConfig = mergedUpstreamMap[fdnAppName];
   if (fdnAppConfig === void 0) {
     return "";
+  }
+  
+  // 如果命名空间没映射，默认绕过。因为大多数用户不想配置也不需要复杂的命名空间。
+  if (fdnAppNamespace !== void 0) {
+    if (!mergedNamespaceMap.hasOwnProperty(fdnAppNamespace)) {
+      return "";
+    }
+
+    const namespaceConfig = mergedNamespaceMap[fdnAppNamespace];
+    const ban = namespaceConfig.blackListMode
+      ? namespaceConfig.appList.includes(fdnAppName)
+      : !namespaceConfig.appList.includes(fdnAppName);
+    if (ban) {
+      return "";
+    }
   }
 
   const upstreamConfig = fdnAppConfig.upstream;
