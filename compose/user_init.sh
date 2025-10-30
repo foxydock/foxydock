@@ -73,13 +73,15 @@ create_nginx_dir() {
 create_nginx_dir /mnt/justsave/docker/volume/default/nginx/moved_root/var/log/nginx
 create_nginx_dir /mnt/justsave/docker/volume/default/nginx/moved_root/usr/share/nginx/html
 
-create_nginx_file() {
-    local the_nginx_file_path=$1
-    create_nginx_dir "$(dirname "$the_nginx_file_path")"
-    exec_cmd "touch $the_nginx_file_path"
+copy_nginx_v3_config() {
+    local __rel_target_path="$1"
+    __copy_src="/mnt/justsave/docker/volume/example/nginx/moved_root/etc/nginx/snippets/example/by_version/v3/config/${__rel_target_path}"
+    __copy_dst="/mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/v3/config/${__rel_target_path}"
+    exec_cmd "cp -vp $__copy_src $__copy_dst"
 }
-create_nginx_file /mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/v3/config/by_context/stream/map_sni___preset_upstream.conf
-create_nginx_file /mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/v3/config/by_context/http/map_sni___preset_ssl_domain.conf
-create_nginx_file /mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/v3/config/by_app/by_context/http/server/inject_bundle_app_ingress_server.conf
+
+copy_nginx_v3_config 'by_context/stream/map_sni___preset_upstream.conf'
+copy_nginx_v3_config 'by_context/stream/map_sni___preset_ssl_domain.conf'
+copy_nginx_v3_config 'by_app/by_context/http/server/inject_bundle_app_ingress_server.conf'
 
 just_log "ALL DONE."

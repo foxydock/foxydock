@@ -5,15 +5,7 @@ Object.assign(
   inject_fdn_app_upstream_map
 );
 
-const mergedNamespaceMap = {}
-Object.keys(namespace_map).forEach((key) => {
-  const item = namespace_map[key];
-  mergedNamespaceMap[key] = {
-    blackListMode: item.blackListMode,
-    appList: Array.from(item.appList),
-  };
-});
-
+const mergedNamespaceMap = JSON.parse(JSON.stringify(namespace_map));
 Object.keys(inject_namespace_map).forEach((key) => {
   const item = inject_namespace_map[key];
   mergedNamespaceMap[key] = {
@@ -23,6 +15,7 @@ Object.keys(inject_namespace_map).forEach((key) => {
 });
 
 const server404 = "http://unix:/var/run/nginx/fdn_app_server_404.sock";
+import inject_main from "snippets/config/by_version/v3/by_app/by_name/fdn/app_ingress/inject_main.js";
 
 function buildFdnAppRouteUpstream(r) {
   const fdnAppName = r.variables.fdn_app_name;
@@ -71,7 +64,7 @@ function buildFdnAppUpstream(r) {
   if (fdnAppConfig === void 0) {
     return "";
   }
-  
+
   // 如果命名空间没映射，默认绕过。因为大多数用户不想配置也不需要复杂的命名空间。
   if (fdnAppNamespace !== void 0) {
     if (!mergedNamespaceMap.hasOwnProperty(fdnAppNamespace)) {
@@ -104,6 +97,42 @@ function buildFdnAppUpstream(r) {
   }
 
   // console.error('buildFdnAppUpstream result:', result)
+  return result;
+}
+
+
+/**
+ * @param r NGINX HTTP请求上下文
+ * @param currentHttpHeaderKey 当前正在处理的 HTTP Header 键 
+ */
+function mapHttpProxyHeaders(r, currentHttpHeaderKey) {
+  const interceptorBeforeResult = inject_main.doBeforeMapHttpProxyHeader(r, currentHttpHeaderKey);
+  if (interceptorBeforeResult.doneFlag) {
+    return interceptorBeforeResult.result;
+  }
+
+  let result = r.headersIn[currentHttpHeaderKey];
+  const fdnAppName = r.variables.fdn_app_name;
+  switch (fdnAppName) {
+    case 'portainer':
+      if (currentHttpHeaderKey === 'Origin') {
+        result = ''
+      }
+      break;
+    default:
+      break;
+  }
+
+  const interceptorOnFinishResult = inject_main.doOnFinishMapHttpProxyHeader(
+    r,
+    currentHttpHeaderKey,
+    result
+  );
+
+  if (interceptorOnFinishResult.doneFlag) {
+    return interceptorOnFinishResult.result;
+  }
+
   return result;
 }
 
