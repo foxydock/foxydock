@@ -1,9 +1,12 @@
-const mergedUpstreamMap = {};
-Object.assign(
-  mergedUpstreamMap,
-  fdn_app_upstream_map,
-  inject_fdn_app_upstream_map
-);
+const mergedUpstreamMap = JSON.parse(JSON.stringify(fdn_app_upstream_map));
+Object.keys(inject_fdn_app_upstream_map).forEach((key) => {
+  const item = JSON.parse(JSON.stringify(inject_fdn_app_upstream_map[key]));
+  if (mergedUpstreamMap.hasOwnProperty(key)) {
+    Object.assign(mergedUpstreamMap[key], item);
+  } else {
+    mergedUpstreamMap[key] = item;
+  }
+});
 
 const mergedNamespaceMap = JSON.parse(JSON.stringify(namespace_map));
 Object.keys(inject_namespace_map).forEach((key) => {
@@ -17,31 +20,54 @@ Object.keys(inject_namespace_map).forEach((key) => {
 const server404 = "http://unix:/var/run/nginx/fdn_app_server_404.sock";
 import inject_main from "snippets/config/by_version/v3/by_app/by_name/fdn/app_ingress/inject_main.js";
 
+function getNamespaceConfig(fdnAppNamespace) {
+  let namespaceConfig = void 0;
+  if (fdnAppNamespace !== void 0 && mergedNamespaceMap.hasOwnProperty(fdnAppNamespace)) {
+    namespaceConfig = mergedNamespaceMap[fdnAppNamespace];
+  }
+
+  return namespaceConfig;
+}
+
+function banByNamespace(fdnAppName, namespaceConfig) {
+    return namespaceConfig.blackListMode
+      ? namespaceConfig.appList.includes(fdnAppName)
+      : !namespaceConfig.appList.includes(fdnAppName);
+}
+
+function getUpstreamMapByNamespaceConfig(namespaceConfig) {
+  let profile = 'default';
+  if (namespaceConfig && namespaceConfig.hasOwnProperty('profile')) {
+    profile = namespaceConfig.profile;
+  }
+
+  return mergedUpstreamMap.hasOwnProperty(profile) ? mergedUpstreamMap[profile] : {};
+}
+
 function buildFdnAppRouteUpstream(r) {
   const fdnAppName = r.variables.fdn_app_name;
   const fdnAppNamespace = r.variables.fdn_app_namespace;
 
-  // APP 都不存在，何谈命名空间？直接返回 404
-  if (!mergedUpstreamMap.hasOwnProperty(fdnAppName)) {
+  // 如果命名空间没映射，默认绕过。因为大多数用户不想配置也不需要复杂的命名空间。
+  let namespaceConfig = void 0;
+  if (fdnAppNamespace !== void 0) {
+    let namespaceConfig = getNamespaceConfig(fdnAppNamespace);
+    if (!namespaceConfig) {
+      return server404;
+    }
+
+    if (banByNamespace(fdnAppName, namespaceConfig)) {
+      return server404;
+    }
+  }
+
+  const upstreamMap = getUpstreamMapByNamespaceConfig(namespaceConfig);
+  // APP 不存在
+  if (!upstreamMap.hasOwnProperty(fdnAppName)) {
     return server404;
   }
 
-  // 如果命名空间没映射，默认绕过。因为大多数用户不想配置也不需要复杂的命名空间。
-  if (fdnAppNamespace !== void 0) {
-    if (!mergedNamespaceMap.hasOwnProperty(fdnAppNamespace)) {
-      return server404;
-    }
-
-    const namespaceConfig = mergedNamespaceMap[fdnAppNamespace];
-    const ban = namespaceConfig.blackListMode
-      ? namespaceConfig.appList.includes(fdnAppName)
-      : !namespaceConfig.appList.includes(fdnAppName);
-    if (ban) {
-      return server404;
-    }
-  }
-
-  const fdnAppConfig = mergedUpstreamMap[fdnAppName];
+  const fdnAppConfig = upstreamMap[fdnAppName];
   // console.error(`buildFdnAppRouteUpstream route config: >>>${JSON.stringify(fdnAppConfig)}<<<`, )
   // console.error(`buildFdnAppRouteUpstream fdnAppName: >>>${fdnAppName}<<<`, )
   if (fdnAppConfig.notCommon) {
@@ -54,32 +80,26 @@ function buildFdnAppRouteUpstream(r) {
 function buildFdnAppUpstream(r) {
   const fdnAppName = r.variables.fdn_app_name;
   const fdnAppNamespace = r.variables.fdn_app_namespace;
-
-  // APP 不存在
-  if (!mergedUpstreamMap.hasOwnProperty(fdnAppName)) {
-    return "";
-  }
-
-  const fdnAppConfig = mergedUpstreamMap[fdnAppName];
-  if (fdnAppConfig === void 0) {
-    return "";
-  }
-
-  // 如果命名空间没映射，默认绕过。因为大多数用户不想配置也不需要复杂的命名空间。
+  
+  let namespaceConfig = void 0;
   if (fdnAppNamespace !== void 0) {
-    if (!mergedNamespaceMap.hasOwnProperty(fdnAppNamespace)) {
+    let namespaceConfig = getNamespaceConfig(fdnAppNamespace);
+    if (!namespaceConfig) {
       return "";
     }
 
-    const namespaceConfig = mergedNamespaceMap[fdnAppNamespace];
-    const ban = namespaceConfig.blackListMode
-      ? namespaceConfig.appList.includes(fdnAppName)
-      : !namespaceConfig.appList.includes(fdnAppName);
-    if (ban) {
+    if (banByNamespace(fdnAppName, namespaceConfig)) {
       return "";
     }
   }
 
+  const upstreamMap = getUpstreamMapByNamespaceConfig(namespaceConfig);
+  // APP 不存在
+  if (!upstreamMap.hasOwnProperty(fdnAppName)) {
+    return "";
+  }
+
+  const fdnAppConfig = upstreamMap[fdnAppName];
   const upstreamConfig = fdnAppConfig.upstream;
 
   let appSchema = "http";

@@ -5,7 +5,8 @@
   },
   "prod": {
     "appList": ["portainer", "gitea", "gitlab"],
-    "blackListMode": false
+    "blackListMode": false,
+    "profile": "default"
   },
   "private": {
     "appList": [],

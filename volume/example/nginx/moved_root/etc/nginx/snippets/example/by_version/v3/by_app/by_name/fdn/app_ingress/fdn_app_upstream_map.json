@@ -1,208 +1,210 @@
 {
-    "transmission": {
-        "notCommon": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 9091
-        }
-    },
-    "mihomo": {
-        "notCommon": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28001
-        }
-    },
-    "clash-webui": {
-        "rawRequestUri": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28002
-        }
-    },
-    "phpmyadmin": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28009
-        }
-    },
-    "xfl-wanted-cv": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28010
-        }
-    },
-    "jenkins": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28011
-        }
-    },
-    "qbittorrent": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28012
-        }
-    },
-    "gitlab": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28013
-        }
-    },
-    "gitea": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28014
-        }
-    },
-    "headscale": {
-        "notCommon": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28015
-        }
-    },
-    "headscale-webui": {
-        "rawRequestUri": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28016
-        }
-    },
-    "wg-easy": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28017
-        }
-    },
-    "hertzbeat": {
-        "rawRequestUri": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28018
-        }
-    },
-    "portainer": {
-        "rawRequestUri": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28019
-        }
-    },
-    "glances": {
-        "rawRequestUri": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28040
-        }
-    },
-    "netdata": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28041
-        }
-    },
-    "vscode": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28042
-        }
-    },
-    "bitcomet": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28043
-        }
-    },
-    "neko": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28044
-        }
-    },
-    "libreoffice": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28045
-        }
-    },
-    "mayfly": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28046
-        }
-    },
-    "kodbox": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28047
-        }
-    },
-    "pbh": {
-        "rawRequestUri": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28048
-        }
-    },
-    "frigate": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28049
-        }
-    },
-    "v2raya": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28051
-        }
-    },
-    "jfrog-artifactory": {
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28052
-        }
-    },
-    "jfrog": {
-        "notCommon": true,
-        "upstream": {
-            "socket": "ip",
-            "host": "127.0.0.1",
-            "port": 28053
-        }
-    },
-    "ttyd": {
-        "notCommon": true,
-        "upstream": {
-            "socket": "uds",
-            "path": "/var/run/ttyd/ttyd.sock"
+    "default": {
+        "transmission": {
+            "notCommon": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 9091
+            }
+        },
+        "mihomo": {
+            "notCommon": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28001
+            }
+        },
+        "clash-webui": {
+            "rawRequestUri": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28002
+            }
+        },
+        "phpmyadmin": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28009
+            }
+        },
+        "xfl-wanted-cv": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28010
+            }
+        },
+        "jenkins": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28011
+            }
+        },
+        "qbittorrent": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28012
+            }
+        },
+        "gitlab": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28013
+            }
+        },
+        "gitea": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28014
+            }
+        },
+        "headscale": {
+            "notCommon": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28015
+            }
+        },
+        "headscale-webui": {
+            "rawRequestUri": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28016
+            }
+        },
+        "wg-easy": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28017
+            }
+        },
+        "hertzbeat": {
+            "rawRequestUri": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28018
+            }
+        },
+        "portainer": {
+            "rawRequestUri": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28019
+            }
+        },
+        "glances": {
+            "rawRequestUri": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28040
+            }
+        },
+        "netdata": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28041
+            }
+        },
+        "vscode": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28042
+            }
+        },
+        "bitcomet": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28043
+            }
+        },
+        "neko": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28044
+            }
+        },
+        "libreoffice": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28045
+            }
+        },
+        "mayfly": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28046
+            }
+        },
+        "kodbox": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28047
+            }
+        },
+        "pbh": {
+            "rawRequestUri": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28048
+            }
+        },
+        "frigate": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28049
+            }
+        },
+        "v2raya": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28051
+            }
+        },
+        "jfrog-artifactory": {
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28052
+            }
+        },
+        "jfrog": {
+            "notCommon": true,
+            "upstream": {
+                "socket": "ip",
+                "host": "127.0.0.1",
+                "port": 28053
+            }
+        },
+        "ttyd": {
+            "notCommon": true,
+            "upstream": {
+                "socket": "uds",
+                "path": "/var/run/ttyd/ttyd.sock"
+            }
         }
     }
 }
