@@ -73,6 +73,7 @@ create_nginx_dir() {
 create_nginx_dir /mnt/justsave/docker/volume/default/nginx/moved_root/var/log/nginx
 create_nginx_dir /mnt/justsave/docker/volume/default/nginx/moved_root/usr/share/nginx/html
 
+mkdir -p /mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/v3/config
 copy_nginx_v3_config() {
     local __rel_target_path="$1"
     __copy_src="/mnt/justsave/docker/volume/example/nginx/moved_root/etc/nginx/snippets/example/by_version/v3/config/${__rel_target_path}"
@@ -80,6 +81,7 @@ copy_nginx_v3_config() {
     exec_cmd "cp -vp $__copy_src $__copy_dst"
 }
 
+copy_nginx_v3_config 'nginx.conf'
 copy_nginx_v3_config 'by_context/stream/map_sni___preset_upstream.conf'
 copy_nginx_v3_config 'by_context/stream/map_sni___preset_ssl_domain.conf'
 copy_nginx_v3_config 'by_app/by_context/http/server/inject_bundle_app_ingress_server.conf'
