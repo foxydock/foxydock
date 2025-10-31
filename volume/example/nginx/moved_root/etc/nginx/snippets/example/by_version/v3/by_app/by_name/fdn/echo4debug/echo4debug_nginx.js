@@ -45,6 +45,15 @@ function buildNginxVars(r) {
     .join("\n");
 }
 
+function log4debug(r) {
+  const fdnAppName = r.variables["fdn_app_name"];
+  const fdnNjsDebugTarget = r.variables["fdn_njs_debug_target"];
+  if (fdnNjsDebugTarget && fdnAppName && fdnNjsDebugTarget === fdnAppName) {
+    console.error("echo4debug nginx vars:\n" + buildNginxVars(r));
+  }
+}
+
 export default {
   buildNginxVars,
+  log4debug,
 };

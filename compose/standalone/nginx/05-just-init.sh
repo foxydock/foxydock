@@ -19,6 +19,12 @@ if [ ! -e /usr/share/nginx/html ]; then
     just_log "dir[/usr/share/nginx/html] is created."
 fi
 
+if [ ! -e /etc/nginx/html ]; then
+    just_log "dir[/etc/nginx/html] is not found. Will create it..."
+    just_exec_cmd "mkdir -p /etc/nginx/html"
+    just_log "dir[/etc/nginx/html] is created."
+fi
+
 latest_example_snippets_version="$(cat /etc/nginx/snippets/example/by_version/latest_version)"
 latest_example_snippets_directory="/etc/nginx/snippets/example/by_version/${latest_example_snippets_version}"
 user_current_snippets_directory="/etc/nginx/snippets/private/by_version/current"

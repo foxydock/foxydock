@@ -84,6 +84,6 @@ copy_nginx_v3_config() {
 copy_nginx_v3_config 'nginx.conf'
 copy_nginx_v3_config 'by_context/stream/map_sni___preset_upstream.conf'
 copy_nginx_v3_config 'by_context/stream/map_sni___preset_ssl_domain.conf'
-copy_nginx_v3_config 'by_app/by_context/http/server/inject_bundle_app_ingress_server.conf'
+copy_nginx_v3_config 'by_app/by_context/http/server/inject_app_ingress_server.conf'
 
 just_log "ALL DONE."

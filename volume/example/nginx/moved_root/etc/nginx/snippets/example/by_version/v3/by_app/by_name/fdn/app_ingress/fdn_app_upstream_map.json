@@ -185,6 +185,7 @@
             }
         },
         "jfrog-artifactory": {
+            "rawRequestUri": true,
             "upstream": {
                 "socket": "ip",
                 "host": "127.0.0.1",
@@ -193,6 +194,7 @@
         },
         "jfrog": {
             "notCommon": true,
+            "rawRequestUri": true,
             "upstream": {
                 "socket": "ip",
                 "host": "127.0.0.1",

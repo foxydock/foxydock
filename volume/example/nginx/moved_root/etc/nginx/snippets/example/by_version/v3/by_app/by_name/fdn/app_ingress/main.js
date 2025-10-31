@@ -22,7 +22,10 @@ import inject_main from "snippets/config/by_version/v3/by_app/by_name/fdn/app_in
 
 function getNamespaceConfig(fdnAppNamespace) {
   let namespaceConfig = void 0;
-  if (fdnAppNamespace !== void 0 && mergedNamespaceMap.hasOwnProperty(fdnAppNamespace)) {
+  if (
+    fdnAppNamespace !== void 0 &&
+    mergedNamespaceMap.hasOwnProperty(fdnAppNamespace)
+  ) {
     namespaceConfig = mergedNamespaceMap[fdnAppNamespace];
   }
 
@@ -30,18 +33,20 @@ function getNamespaceConfig(fdnAppNamespace) {
 }
 
 function banByNamespace(fdnAppName, namespaceConfig) {
-    return namespaceConfig.blackListMode
-      ? namespaceConfig.appList.includes(fdnAppName)
-      : !namespaceConfig.appList.includes(fdnAppName);
+  return namespaceConfig.blackListMode
+    ? namespaceConfig.appList.includes(fdnAppName)
+    : !namespaceConfig.appList.includes(fdnAppName);
 }
 
 function getUpstreamMapByNamespaceConfig(namespaceConfig) {
-  let profile = 'default';
-  if (namespaceConfig && namespaceConfig.hasOwnProperty('profile')) {
+  let profile = "default";
+  if (namespaceConfig && namespaceConfig.hasOwnProperty("profile")) {
     profile = namespaceConfig.profile;
   }
 
-  return mergedUpstreamMap.hasOwnProperty(profile) ? mergedUpstreamMap[profile] : {};
+  return mergedUpstreamMap.hasOwnProperty(profile)
+    ? mergedUpstreamMap[profile]
+    : {};
 }
 
 function buildFdnAppRouteUpstream(r) {
@@ -67,32 +72,24 @@ function buildFdnAppRouteUpstream(r) {
     return server404;
   }
 
+  const schema = r.variables.fdn_ingress_scheme === 'https' ? 'https' : 'http';
+  const upstreamTlsAppendValue = schema === "https" ? '_tls' : '';
   const fdnAppConfig = upstreamMap[fdnAppName];
   // console.error(`buildFdnAppRouteUpstream route config: >>>${JSON.stringify(fdnAppConfig)}<<<`, )
   // console.error(`buildFdnAppRouteUpstream fdnAppName: >>>${fdnAppName}<<<`, )
   if (fdnAppConfig.notCommon) {
-    return `http://unix:/var/run/nginx/fdn_app_server_${fdnAppName}.sock`;
+    return `${schema}://unix:/var/run/nginx/fdn_app_server${upstreamTlsAppendValue}_${fdnAppName}.sock`;
   }
 
-  return "http://unix:/var/run/nginx/fdn_app_server_common.sock";
+  return `${schema}://unix:/var/run/nginx/fdn_app_server${upstreamTlsAppendValue}_common.sock`;
 }
 
 function buildFdnAppUpstream(r) {
   const fdnAppName = r.variables.fdn_app_name;
   const fdnAppNamespace = r.variables.fdn_app_namespace;
-  
-  let namespaceConfig = void 0;
-  if (fdnAppNamespace !== void 0) {
-    let namespaceConfig = getNamespaceConfig(fdnAppNamespace);
-    if (!namespaceConfig) {
-      return "";
-    }
 
-    if (banByNamespace(fdnAppName, namespaceConfig)) {
-      return "";
-    }
-  }
-
+  // 构建上游不管命名空间限制，因为有很多反代依赖别的 APP 上游地址
+  const namespaceConfig = getNamespaceConfig(fdnAppNamespace);
   const upstreamMap = getUpstreamMapByNamespaceConfig(namespaceConfig);
   // APP 不存在
   if (!upstreamMap.hasOwnProperty(fdnAppName)) {
@@ -120,13 +117,15 @@ function buildFdnAppUpstream(r) {
   return result;
 }
 
-
 /**
  * @param r NGINX HTTP请求上下文
- * @param currentHttpHeaderKey 当前正在处理的 HTTP Header 键 
+ * @param currentHttpHeaderKey 当前正在处理的 HTTP Header 键
  */
 function mapHttpProxyHeaders(r, currentHttpHeaderKey) {
-  const interceptorBeforeResult = inject_main.doBeforeMapHttpProxyHeader(r, currentHttpHeaderKey);
+  const interceptorBeforeResult = inject_main.doBeforeMapHttpProxyHeader(
+    r,
+    currentHttpHeaderKey
+  );
   if (interceptorBeforeResult.doneFlag) {
     return interceptorBeforeResult.result;
   }
@@ -134,9 +133,9 @@ function mapHttpProxyHeaders(r, currentHttpHeaderKey) {
   let result = r.headersIn[currentHttpHeaderKey];
   const fdnAppName = r.variables.fdn_app_name;
   switch (fdnAppName) {
-    case 'portainer':
-      if (currentHttpHeaderKey === 'Origin') {
-        result = ''
+    case "portainer":
+      if (currentHttpHeaderKey === "Origin") {
+        result = "";
       }
       break;
     default:
