@@ -1,6 +1,8 @@
-const mergedUpstreamMap = JSON.parse(JSON.stringify(fdn_app_upstream_map));
+import njs_util from "snippets/example/by_version/v3/by_feature/var_builder/njs_util.js";
+const deepCopy = njs_util.deepCopy;
+const mergedUpstreamMap = deepCopy(fdn_app_upstream_map);
 Object.keys(inject_fdn_app_upstream_map).forEach((key) => {
-  const item = JSON.parse(JSON.stringify(inject_fdn_app_upstream_map[key]));
+  const item = deepCopy(inject_fdn_app_upstream_map[key]);
   if (mergedUpstreamMap.hasOwnProperty(key)) {
     Object.assign(mergedUpstreamMap[key], item);
   } else {
@@ -8,17 +10,12 @@ Object.keys(inject_fdn_app_upstream_map).forEach((key) => {
   }
 });
 
-const mergedNamespaceMap = JSON.parse(JSON.stringify(namespace_map));
+const mergedNamespaceMap = deepCopy(namespace_map);
 Object.keys(inject_namespace_map).forEach((key) => {
-  const item = inject_namespace_map[key];
-  mergedNamespaceMap[key] = {
-    blackListMode: item.blackListMode,
-    appList: Array.from(item.appList),
-  };
+  mergedNamespaceMap[key] = deepCopy(inject_namespace_map[key]);
 });
 
 const server404 = "http://unix:/var/run/nginx/fdn_app_server_404.sock";
-import inject_main from "snippets/config/by_version/v3/by_app/by_name/fdn/app_ingress/inject_main.js";
 
 function getNamespaceConfig(fdnAppNamespace) {
   let namespaceConfig = void 0;
@@ -72,8 +69,8 @@ function buildFdnAppRouteUpstream(r) {
     return server404;
   }
 
-  const schema = r.variables.fdn_ingress_scheme === 'https' ? 'https' : 'http';
-  const upstreamTlsAppendValue = schema === "https" ? '_tls' : '';
+  const schema = r.variables.fdn_ingress_scheme === "https" ? "https" : "http";
+  const upstreamTlsAppendValue = schema === "https" ? "_tls" : "";
   const fdnAppConfig = upstreamMap[fdnAppName];
   // console.error(`buildFdnAppRouteUpstream route config: >>>${JSON.stringify(fdnAppConfig)}<<<`, )
   // console.error(`buildFdnAppRouteUpstream fdnAppName: >>>${fdnAppName}<<<`, )
@@ -117,6 +114,7 @@ function buildFdnAppUpstream(r) {
   return result;
 }
 
+import inject_main from "snippets/config/by_version/v3/by_app/by_name/fdn/app_ingress/inject_main.js";
 /**
  * @param r NGINX HTTP请求上下文
  * @param currentHttpHeaderKey 当前正在处理的 HTTP Header 键
