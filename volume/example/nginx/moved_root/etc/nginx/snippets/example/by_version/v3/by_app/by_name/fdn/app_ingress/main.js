@@ -37,6 +37,7 @@ function banByNamespace(fdnAppName, namespaceConfig) {
 
 function getUpstreamMapByNamespaceConfig(namespaceConfig) {
   let profile = "default";
+  // console.error(`getUpstreamMapByNamespaceConfig namespaceConfig=${JSON.stringify(namespaceConfig)}`)
   if (namespaceConfig && namespaceConfig.hasOwnProperty("profile")) {
     profile = namespaceConfig.profile;
   }
@@ -53,12 +54,15 @@ function buildFdnAppRouteUpstream(r) {
   // 如果命名空间没映射，默认绕过。因为大多数用户不想配置也不需要复杂的命名空间。
   let namespaceConfig = void 0;
   if (fdnAppNamespace !== void 0) {
-    let namespaceConfig = getNamespaceConfig(fdnAppNamespace);
+    namespaceConfig = getNamespaceConfig(fdnAppNamespace);
     if (!namespaceConfig) {
+      // console.error(`namespaceConfig not found for namespace: ${fdnAppNamespace}`)
       return server404;
     }
 
+    // console.error(`namespaceConfig: ${JSON.stringify(namespaceConfig)}`)
     if (banByNamespace(fdnAppName, namespaceConfig)) {
+      // console.error(`banByNamespace appName=${fdnAppName} namespace=${fdnAppNamespace}`)
       return server404;
     }
   }
