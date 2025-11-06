@@ -57,6 +57,10 @@ link_items() {
     local target_dir="$2"
 
     for item in "$source_dir"/*; do
+        # 过滤掉空目录的情况。因为一旦 $source_dir 是空目录， $item 会变成 $source_dir/*
+        # 这是一个无效路径，所以要跳过
+        [ -e "$item" ] || continue
+
         local basename_item=$(basename "$item")
         local target_path="$target_dir/$basename_item"
 
@@ -73,9 +77,11 @@ link_items() {
 
 if (( 10#$user_current_version_in_pure_num_text > 2 )); then
     # Link example config files
+    just_log "Link example config files..."
     link_items "$current_example_config_directory" "$mixins_config_directory"
     # Link user config files if they exist
     if [ -e "$current_user_config_directory" ]; then
+        just_log "Link user config files..."
         link_items "$current_user_config_directory" "$mixins_config_directory"
     fi
 fi
