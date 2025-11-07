@@ -57,5 +57,6 @@
     "fdn_app_namespace",
     "fdn_app_route_upstream",
     "fdn_app_upstream",
+    "fdn_disable_buffering",
     "access_log_file_name"
 ]
