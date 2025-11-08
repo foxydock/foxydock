@@ -118,7 +118,7 @@ function buildFdnAppUpstream(r) {
   return result;
 }
 
-import inject_main from "snippets/config/by_version/v3/by_app/by_name/fdn/app_ingress/inject_main.js";
+import inject_main from "snippets/config/by_version/v3/by_app/by_name/fdn/app/ingress/inject_main.js";
 /**
  * @param r NGINX HTTP请求上下文
  * @param currentHttpHeaderKey 当前正在处理的 HTTP Header 键
