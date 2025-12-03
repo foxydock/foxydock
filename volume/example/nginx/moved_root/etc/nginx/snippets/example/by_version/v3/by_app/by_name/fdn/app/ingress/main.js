@@ -1,3 +1,4 @@
+/// <reference types="njs-types/ngx_http_js_module.d.ts" />
 import njs_util from "snippets/example/by_version/v3/by_feature/var_builder/njs_util.js";
 const deepCopy = njs_util.deepCopy;
 const mergedUpstreamMap = deepCopy(fdn_app_upstream_map);
@@ -47,6 +48,9 @@ function getUpstreamMapByNamespaceConfig(namespaceConfig) {
     : {};
 }
 
+/**
+ * @param {NginxHTTPRequest} r 
+ */
 function buildFdnAppRouteUpstream(r) {
   const fdnAppName = r.variables.fdn_app_name;
   const fdnAppNamespace = r.variables.fdn_app_namespace;
@@ -73,7 +77,7 @@ function buildFdnAppRouteUpstream(r) {
     return server404;
   }
 
-  const schema = r.variables.fdn_ingress_scheme === "https" ? "https" : "http";
+  const schema = r.variables.ssl_server_name ? "https" : "http";
   const upstreamTlsAppendValue = schema === "https" ? "_tls" : "";
   const fdnAppConfig = upstreamMap[fdnAppName];
   // console.error(`buildFdnAppRouteUpstream route config: >>>${JSON.stringify(fdnAppConfig)}<<<`, )
