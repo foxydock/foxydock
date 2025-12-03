@@ -176,8 +176,6 @@ function getFdnHttpIngressXRoutedVal(
     : void 0;
 }
 
-
-
 /**
  * FoxyDockNginx 获取当前 NGINX 网关所看到的源头客户端的请求协议
  * @param {NginxHTTPRequest} r NGINX 请求对象
@@ -198,10 +196,16 @@ function getFdnIngressScheme(r) {
  */
 function getFdnIngressHost(r) {
   if (isIngressStreamForward(r)) {
-    return r.variables.host;
+    return r.variables.http3
+      ? `${r.variables.host}:${r.variables.proxy_protocol_server_port}`
+      : r.variables.http_host;
   }
 
-  return getFdnHttpIngressXRoutedVal(r, "fdn_http3_compatible_host_for_proxy", "http_x_fdn_ingress_host");
+  return getFdnHttpIngressXRoutedVal(
+    r,
+    "fdn_http3_compatible_host_for_proxy",
+    "http_x_fdn_ingress_host"
+  );
 }
 
 /**
@@ -210,10 +214,6 @@ function getFdnIngressHost(r) {
  * @returns 当前 NGINX 网关所看到的源头客户端请求的服务器端口
  */
 function getFdnIngressServerPort(r) {
-  if (isIngressStreamForward(r)) {
-    return r.variables.proxy_protocol_server_port;
-  }
-
   return getFdnHttpIngressXRoutedVal(
     r,
     "server_port",
@@ -227,10 +227,6 @@ function getFdnIngressServerPort(r) {
  * @returns 当前 NGINX 网关所看到的源头客户端的地址
  */
 function getFdnIngressRemoteAddr(r) {
-  if (isIngressStreamForward(r)) {
-    return r.variables.proxy_protocol_addr;
-  }
-
   return getFdnHttpIngressXRoutedVal(
     r,
     "remote_addr",
