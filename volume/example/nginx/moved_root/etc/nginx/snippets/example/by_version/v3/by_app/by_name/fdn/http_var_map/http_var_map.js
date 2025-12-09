@@ -241,6 +241,22 @@ function getFdnIngressRemoteAddr(r) {
 }
 
 /**
+ * FoxyDockNginx 生成 NGINX 网关 X-Forwarded-For 的值
+ * @param {NginxHTTPRequest} r NGINX 请求对象
+ * @returns X-Forwarded-For 的值
+ */
+function getFdnIngressXForwardedFor(r) {
+  // 优先尊重 X-Forwarded-For
+  if (r.variables.http_x_forwarded_for) {
+    return r.variables.proxy_add_x_forwarded_for;
+  }
+
+  return `${getFdnIngressRemoteAddr(r)}, unix:`;
+}
+
+
+
+/**
  * 获取访问日志保存文件名
  * @param {NginxHTTPRequest} r NGINX 请求对象
  */
@@ -284,6 +300,7 @@ export default {
   getFdnIngressHost,
   getFdnIngressServerPort,
   getFdnIngressRemoteAddr,
+  getFdnIngressXForwardedFor,
 
   getAccessLogFileName,
 };
