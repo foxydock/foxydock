@@ -90,7 +90,7 @@ copy_nginx_v3_config 'by_app/by_name/fdn/app/ingress/inject_default_server.conf'
 
 NGINX_ENTRY_CONFIG_FILE_PATH='/mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/current/nginx.conf'
 if [ ! -e $NGINX_ENTRY_CONFIG_FILE_PATH ]; then
-    echo -e 'include snippets/private/by_version/current/by_context/nginx.conf;\n' > $NGINX_ENTRY_CONFIG_FILE_PATH
+    exec_cmd "echo -e 'include snippets/private/by_version/current/nginx.conf;\n' > $NGINX_ENTRY_CONFIG_FILE_PATH"
 fi
 
 just_log "ALL DONE."
