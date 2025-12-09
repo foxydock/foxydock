@@ -79,11 +79,18 @@ copy_nginx_v3_config() {
     __copy_src="/mnt/justsave/docker/volume/example/nginx/moved_root/etc/nginx/snippets/example/by_version/v3/config/${__rel_target_path}"
     __copy_dst="/mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/v3/config/${__rel_target_path}"
     exec_cmd "mkdir -p $(dirname $__copy_dst)"
-    exec_cmd "cp -vp $__copy_src $__copy_dst"
+    if [ ! -e $__copy_dst ]; then
+        exec_cmd "cp -vp $__copy_src $__copy_dst"
+    fi
 }
 
 copy_nginx_v3_config 'nginx.conf'
 copy_nginx_v3_config 'by_context/http/map_sni___preset_ssl_domain.conf'
 copy_nginx_v3_config 'by_app/by_name/fdn/app/ingress/inject_default_server.conf'
+
+NGINX_ENTRY_CONFIG_FILE_PATH='/mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/current/nginx.conf'
+if [ ! -e $NGINX_ENTRY_CONFIG_FILE_PATH ]; then
+    echo -e 'include snippets/private/by_version/current/by_context/nginx.conf;\n' > $NGINX_ENTRY_CONFIG_FILE_PATH
+fi
 
 just_log "ALL DONE."
