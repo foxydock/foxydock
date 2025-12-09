@@ -7,8 +7,6 @@ RUN python3 -m venv venv
 ENV PATH="/app/myvenv/bin:$PATH"
 RUN pip3 install --upgrade pip
 RUN pip3 install wheel
-# FIXME 去上游提交新版SDK适配
-RUN sed -i 's/aliyun-python-sdk-cas/alibabacloud-cas20200407/g' requirements.txt
 RUN pip3 install -Ur requirements.txt
 
 FROM neilpang/acme.sh:latest
