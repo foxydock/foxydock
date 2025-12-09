@@ -49,11 +49,17 @@ function getUpstreamMapByNamespaceConfig(namespaceConfig) {
 }
 
 /**
- * @param {NginxHTTPRequest} r 
+ * @param {NginxHTTPRequest} r
  */
 function buildFdnAppRouteUpstream(r) {
   const fdnAppName = r.variables.fdn_app_name;
   const fdnAppNamespace = r.variables.fdn_app_namespace;
+  const scheme = r.variables.ssl_server_name ? "https" : "http";
+  const upstreamTlsAppendValue = scheme === "https" ? "_tls" : "";
+  const defaultUpstream =
+    r.variables.fdn_default_upstream === "fdn_default_server"
+      ? `${scheme}://unix:/var/run/nginx/fdn_default_server${upstreamTlsAppendValue}.sock`
+      : server404;
 
   // 如果命名空间没映射，默认绕过。因为大多数用户不想配置也不需要复杂的命名空间。
   let namespaceConfig = void 0;
@@ -61,32 +67,30 @@ function buildFdnAppRouteUpstream(r) {
     namespaceConfig = getNamespaceConfig(fdnAppNamespace);
     if (!namespaceConfig) {
       // console.error(`namespaceConfig not found for namespace: ${fdnAppNamespace}`)
-      return server404;
+      return defaultUpstream;
     }
 
     // console.error(`namespaceConfig: ${JSON.stringify(namespaceConfig)}`)
     if (banByNamespace(fdnAppName, namespaceConfig)) {
       // console.error(`banByNamespace appName=${fdnAppName} namespace=${fdnAppNamespace}`)
-      return server404;
+      return defaultUpstream;
     }
   }
 
   const upstreamMap = getUpstreamMapByNamespaceConfig(namespaceConfig);
   // APP 不存在
   if (!upstreamMap.hasOwnProperty(fdnAppName)) {
-    return server404;
+    return defaultUpstream;
   }
 
-  const schema = r.variables.ssl_server_name ? "https" : "http";
-  const upstreamTlsAppendValue = schema === "https" ? "_tls" : "";
   const fdnAppConfig = upstreamMap[fdnAppName];
   // console.error(`buildFdnAppRouteUpstream route config: >>>${JSON.stringify(fdnAppConfig)}<<<`, )
   // console.error(`buildFdnAppRouteUpstream fdnAppName: >>>${fdnAppName}<<<`, )
   if (fdnAppConfig.notCommon) {
-    return `${schema}://unix:/var/run/nginx/fdn_app_server${upstreamTlsAppendValue}_${fdnAppName}.sock`;
+    return `${scheme}://unix:/var/run/nginx/fdn_app_server${upstreamTlsAppendValue}_${fdnAppName}.sock`;
   }
 
-  return `${schema}://unix:/var/run/nginx/fdn_app_server${upstreamTlsAppendValue}_common.sock`;
+  return `${scheme}://unix:/var/run/nginx/fdn_app_server${upstreamTlsAppendValue}_common.sock`;
 }
 
 function buildFdnAppUpstream(r) {
@@ -104,18 +108,18 @@ function buildFdnAppUpstream(r) {
   const fdnAppConfig = upstreamMap[fdnAppName];
   const upstreamConfig = fdnAppConfig.upstream;
 
-  let appSchema = "http";
-  if (upstreamConfig.schema && upstreamConfig.schema.tls) {
-    appSchema = "https";
+  let appScheme = "http";
+  if (upstreamConfig.scheme && upstreamConfig.scheme.tls) {
+    appScheme = "https";
   }
 
   const appUri =
     fdnAppConfig.rawRequestUri ?? false ? r.variables.request_uri : "";
   let result = "";
   if (upstreamConfig.socket === "ip") {
-    result = `${appSchema}://${upstreamConfig.host}:${upstreamConfig.port}${appUri}`;
+    result = `${appScheme}://${upstreamConfig.host}:${upstreamConfig.port}${appUri}`;
   } else if (upstreamConfig.socket === "uds") {
-    result = `${appSchema}://unix:${upstreamConfig.path}${appUri}`;
+    result = `${appScheme}://unix:${upstreamConfig.path}${appUri}`;
   }
 
   // console.error('buildFdnAppUpstream result:', result)
