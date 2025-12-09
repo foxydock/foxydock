@@ -196,9 +196,7 @@ function getFdnIngressScheme(r) {
  */
 function getFdnIngressHost(r) {
   if (isIngressStreamForward(r)) {
-    return r.variables.http3
-      ? `${r.variables.host}:${r.variables.proxy_protocol_server_port}`
-      : r.variables.http_host;
+    return `${getHostName(r)}:${r.variables.proxy_protocol_server_port}`;
   }
 
   return getFdnHttpIngressXRoutedVal(
@@ -214,6 +212,10 @@ function getFdnIngressHost(r) {
  * @returns 当前 NGINX 网关所看到的源头客户端请求的服务器端口
  */
 function getFdnIngressServerPort(r) {
+  if (isIngressStreamForward(r)) {
+    return r.variables.proxy_protocol_server_port;
+  }
+
   return getFdnHttpIngressXRoutedVal(
     r,
     "server_port",
@@ -227,6 +229,10 @@ function getFdnIngressServerPort(r) {
  * @returns 当前 NGINX 网关所看到的源头客户端的地址
  */
 function getFdnIngressRemoteAddr(r) {
+  if (isIngressStreamForward(r)) {
+    return r.variables.proxy_protocol_addr;
+  }
+
   return getFdnHttpIngressXRoutedVal(
     r,
     "remote_addr",
