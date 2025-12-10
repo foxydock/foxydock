@@ -28,7 +28,7 @@ if (theSetting.blackList2whiteList) {
 
     itemList = itemList.concat(
       Array.from(theSetting.extras ?? []).filter((item) => {
-        return !(itemSet.hasOwnProperty(item) || blackSet.hasOwnProperty(item));
+        return !itemSet.hasOwnProperty(item) && !blackSet.hasOwnProperty(item);
       })
     );
 
