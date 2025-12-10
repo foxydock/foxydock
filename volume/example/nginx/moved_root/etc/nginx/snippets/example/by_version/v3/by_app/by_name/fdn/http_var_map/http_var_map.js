@@ -87,10 +87,11 @@ function getFdnJudgeHttpHost(r) {
 function getFdnFirstClientUrlHostname(r) {
   // 优先尊重 X-Forwarded-Host
   if (r.variables.http_x_forwarded_host) {
-    return r.variables.http_x_forwarded_host;
+    return extractHostName(r.variables.http_x_forwarded_host);
   }
 
   const theHost = getFdnJudgeHttpHost(r);
+  // 如果为空，则返回空。毕竟实在拿不到
   if (!theHost) {
     return theHost;
   }
