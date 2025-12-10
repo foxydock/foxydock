@@ -54,7 +54,6 @@
     "document_root",
     "document_uri",
     "request_uri",
-    "rebuild_host",
     "fdn_root_request_url",
     "fdn_full_request_url",
     "http_user_agent",
