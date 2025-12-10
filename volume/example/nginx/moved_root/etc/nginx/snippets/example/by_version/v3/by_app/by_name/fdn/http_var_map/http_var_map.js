@@ -30,6 +30,11 @@ function simpleJudgeVar(r, varNames) {
  * @returns 源头客户端请求协议
  */
 function getFdnFirstClientUrlScheme(r) {
+  // 优先尊重 X-Forwarded-Proto
+  if (r.variables.http_x_forwarded_proto) {
+    return r.variables.http_x_forwarded_proto;
+  }
+
   if (r.variables.ssl_server_name) {
     return "https";
   }
@@ -80,6 +85,11 @@ function getFdnJudgeHttpHost(r) {
  * @returns HostName 部分
  */
 function getFdnFirstClientUrlHostname(r) {
+  // 优先尊重 X-Forwarded-Host
+  if (r.variables.http_x_forwarded_host) {
+    return r.variables.http_x_forwarded_host;
+  }
+
   const theHost = getFdnJudgeHttpHost(r);
   if (!theHost) {
     return theHost;
@@ -196,7 +206,23 @@ function getFdnIngressScheme(r) {
  */
 function getFdnIngressHost(r) {
   if (isIngressStreamForward(r)) {
-    return `${getHostName(r)}:${r.variables.proxy_protocol_server_port}`;
+    const theHostName = getHostName(r);
+    const isTLS = getFdnIngressScheme(r) === "https";
+    const theProxyProtocolServerPort = r.variables.proxy_protocol_server_port;
+    let portNum;
+    switch (theProxyProtocolServerPort) {
+      case "443":
+        portNum = isTLS ? void 0 : "443";
+        break;
+      case "80":
+        portNum = isTLS ? "80" : void 0;
+        break;
+      default:
+        portNum = theProxyProtocolServerPort;
+        break;
+    }
+
+    return portNum ? `${theHostName}:${portNum}` : theHostName;
   }
 
   return getFdnHttpIngressXRoutedVal(
@@ -254,20 +280,15 @@ function getFdnIngressXForwardedFor(r) {
   return `${getFdnIngressRemoteAddr(r)}, unix:`;
 }
 
-
-
 /**
  * 获取访问日志保存文件名
  * @param {NginxHTTPRequest} r NGINX 请求对象
  */
 function getAccessLogFileName(r) {
   // 能提取出 fdn_app_name 时已经符合合法域名的要求
-  // const fdn_app_name = r.variables["fdn_app_name"];
   const fdn_app_name = r.variables.fdn_app_name;
   if (fdn_app_name) {
     return `access_app_${fdn_app_name}.log`;
-  } else {
-    console.error("getAccessLogFileName: fdn_app_name is empty");
   }
 
   // 能匹配上 SSL 证书的有效域名
