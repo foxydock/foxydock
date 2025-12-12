@@ -4,6 +4,7 @@
     "scheme",
     "http3",
     "https",
+    "fdn_forward_node_name",
     "server_name",
     "server_port",
     "remote_port",
