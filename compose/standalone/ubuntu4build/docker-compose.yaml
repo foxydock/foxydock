@@ -14,6 +14,8 @@ services:
     build:
       context: ./
       dockerfile: ubuntu.Dockerfile
+      additional_contexts:
+        resources: /mnt/justsave/docker/compose/build_resource
       pull: true
     extra_hosts:
       - host.docker.internal:host-gateway
