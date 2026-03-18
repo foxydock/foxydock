@@ -74,27 +74,39 @@ DOCKER_USER_NGINX_ROOT='/mnt/justsave/docker/volume/default/nginx/moved_root'
 create_nginx_dir $DOCKER_USER_NGINX_ROOT/var/log/nginx
 create_nginx_dir $DOCKER_USER_NGINX_ROOT/usr/share/nginx/html
 
-DOCKER_NGINX_EXAMPLE_SNIPPETS_DIR="/mnt/justsave/docker/volume/example/nginx/moved_root/etc/nginx/snippets/example"
-DOCKER_NGINX_PRIVATE_SNIPPETS_DIR="${DOCKER_USER_NGINX_ROOT}/etc/nginx/snippets/private"
-mkdir -p $DOCKER_NGINX_PRIVATE_SNIPPETS_DIR/by_version/v3/config
-copy_nginx_v3_config() {
+FDN_EXAMPLE_SNIPPETS_DIR="/mnt/justsave/docker/volume/example/nginx/moved_root/etc/nginx/snippets/example"
+FDN_PRIVATE_SNIPPETS_DIR="${DOCKER_USER_NGINX_ROOT}/etc/nginx/snippets/private"
+
+FDN_LATEST_VERSION="$(cat $FDN_EXAMPLE_SNIPPETS_DIR/by_version/latest_version)"
+# example: /mnt/justsave/docker/volume/example/nginx/moved_root/etc/nginx/snippets/example/by_version/v3
+FDN_LATEST_EXAMPLE_SNIPPETS_DIR="${FDN_EXAMPLE_SNIPPETS_DIR}/by_version/${FDN_LATEST_VERSION}"
+# example: /mnt/justsave/docker/volume/default/nginx/moved_root/etc/nginx/snippets/private/by_version/v3
+FDN_LATEST_PRIVATE_SNIPPETS_DIR="${FDN_PRIVATE_SNIPPETS_DIR}/by_version/${FDN_LATEST_VERSION}"
+FDN_LATEST_EXAMPLE_CONFIG_DIR="${FDN_LATEST_EXAMPLE_SNIPPETS_DIR}/config"
+FDN_LATEST_PRIVATE_CONFIG_DIR="${FDN_LATEST_PRIVATE_SNIPPETS_DIR}/config"
+
+mkdir -p $FDN_LATEST_PRIVATE_CONFIG_DIR
+copy_nginx_latest_config() {
     local __rel_target_path="$1"
-    __copy_src="${DOCKER_NGINX_EXAMPLE_SNIPPETS_DIR}/by_version/v3/config/${__rel_target_path}"
-    __copy_dst="${DOCKER_NGINX_PRIVATE_SNIPPETS_DIR}/by_version/v3/config/${__rel_target_path}"
+    __copy_src="${FDN_LATEST_EXAMPLE_CONFIG_DIR}/${__rel_target_path}"
+    __copy_dst="${FDN_LATEST_PRIVATE_CONFIG_DIR}/${__rel_target_path}"
     exec_cmd "mkdir -p $(dirname $__copy_dst)"
     if [ ! -e $__copy_dst ]; then
         exec_cmd "cp -vp $__copy_src $__copy_dst"
     fi
 }
 
-copy_nginx_v3_config 'by_context/http/map_sni___preset_ssl_domain.conf'
-copy_nginx_v3_config 'by_app/by_name/fdn/app/ingress/inject_default_server.conf'
+copy_nginx_latest_config 'by_context/http/map_sni___preset_ssl_domain.conf'
+copy_nginx_latest_config 'by_app/by_name/fdn/app/ingress/inject_default_server.conf'
 
-NGINX_ENTRY_CONFIG_FILE_PATH="${DOCKER_NGINX_PRIVATE_SNIPPETS_DIR}/by_version/current/nginx.conf"
-if [ ! -e $NGINX_ENTRY_CONFIG_FILE_PATH ]; then
-    FDN_LATEST_VERSION="$(cat $DOCKER_NGINX_EXAMPLE_SNIPPETS_DIR/by_version/latest_version)"
-    FDN_LATEST_ENTRY_CONFIG_FILE_PATH="${DOCKER_NGINX_EXAMPLE_SNIPPETS_DIR}/by_version/${FDN_LATEST_VERSION}/nginx.conf"
-    exec_cmd "cp -vp ${FDN_LATEST_ENTRY_CONFIG_FILE_PATH}  ${NGINX_ENTRY_CONFIG_FILE_PATH}"
+FDN_ENTRY_CONFIG_FILE_DIR_PATH="${FDN_PRIVATE_SNIPPETS_DIR}/by_version/current"
+FDN_ENTRY_CONFIG_FILE_PATH="${FDN_ENTRY_CONFIG_FILE_DIR_PATH}/nginx.conf"
+if [ ! -e $FDN_ENTRY_CONFIG_FILE_DIR_PATH ]; then
+    ln -s $FDN_LATEST_VERSION  $FDN_ENTRY_CONFIG_FILE_DIR_PATH
+fi
+
+if [ ! -e $FDN_ENTRY_CONFIG_FILE_PATH ]; then
+    exec_cmd "cp -vp ${FDN_LATEST_EXAMPLE_SNIPPETS_DIR}/nginx.conf  ${FDN_ENTRY_CONFIG_FILE_PATH}"
 fi
 
 just_log "ALL DONE."

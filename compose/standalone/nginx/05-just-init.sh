@@ -33,11 +33,12 @@ if [ ! -e $user_current_snippets_directory ]; then
     just_log "file[$user_current_snippets_directory] is not found. Will create it..."
     user_versioned_snippets_directory="/etc/nginx/snippets/private/by_version/${latest_example_snippets_version}"
     mkdir -p "${user_versioned_snippets_directory}"
-    just_exec_cmd "ln -s ${latest_example_snippets_version} $user_current_snippets_directory"
-    if [ ! -e "${user_versioned_snippets_directory}/nginx.conf" ]; then
-        just_log "file[${user_versioned_snippets_directory}/nginx.conf] is not found. Will create it..."
-        echo -e "include snippets/example/by_version/${latest_example_snippets_version}/nginx.conf;\n" > "${user_versioned_snippets_directory}/nginx.conf"
-        just_log "file[${user_versioned_snippets_directory}/nginx.conf] is created."
+    just_exec_cmd "ln -s ${user_versioned_snippets_directory} $user_current_snippets_directory"
+    user_nginx_entry_file="${user_versioned_snippets_directory}/nginx.conf"
+    if [ ! -e "$user_nginx_entry_file" ]; then
+        just_log "file[${user_nginx_entry_file}] is not found. Will create it..."
+        echo -e "include snippets/example/by_version/${latest_example_snippets_version}/nginx.conf;\n" > "${user_nginx_entry_file}"
+        just_log "file[${user_nginx_entry_file}] is created."
     fi
 fi
 
